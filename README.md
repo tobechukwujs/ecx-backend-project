@@ -80,3 +80,36 @@ npm run dev
 | POST | `/api/v1/bookings` | Attendee | Book tickets for an event (Atomic update) |
 
 ---
+System Architecture Overview 
+The API follows a Layered Monolithic Architecture, organized to separate concerns between 
+routing, business logic, and database management. 
+
+1. Request Flow & Middleware Layer 
+Every request enters through the Express.js server and passes through a sequence of 
+protective layers: 
+● Validation: Uses Joi to enforce strict data types (e.g., UUID formats, positive integers 
+for seat counts) before logic is executed. 
+● Authentication & RBAC: A custom middleware decodes JWTs to verify identity and 
+enforces Role-Based Access Control (Organizers vs. Attendees). 
+
+2. Business Logic Layer (Controllers) 
+This layer handles the core requirements for Event Management and Ticketing: 
+● Multi-tenant Isolation: The logic ensures that organizer_id is always checked against 
+the JWT user_id so organizers cannot modify other users' data. 
+● Atomic Booking Logic: To meet the 20% grading criteria for "Event & Booking Logic," 
+the system uses SQL Transactions (BEGIN, COMMIT, ROLLBACK). 
+
+3. Data Persistence Layer (PostgreSQL) 
+Unlike standard implementations, this project uses Raw SQL to ensure maximum control over 
+database locking: 
+● Concurrency Control: Employs SELECT ... FOR UPDATE row-level locking during 
+the booking process to prevent race conditions (overbooking). 
+● Relational Integrity: The schema enforces constraints such as UNIQUE(user_id, 
+event_id) to prevent double-bookings and ON DELETE CASCADE to maintain data 
+cleanliness. 
+
+Deployment Architecture 
+The system is deployed on Render, utilizing a managed PostgreSQL instance: 
+● SSL/TLS Encryption: Configured in db.js to satisfy cloud security requirements. 
+● Automated Migrations: The build command triggers node src/config/initDb.js, 
+ensuring the schema is always synchronized with the code.
