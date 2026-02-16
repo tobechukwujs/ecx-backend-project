@@ -67,7 +67,7 @@ npm run dev
 
 ## 📖 API Documentation
 
-**Live URL:** [Insert your Render/Railway Link Here]
+**Live URL:** [https://ecx-event-api.onrender.com/]
 
 ### Core Endpoints
 
