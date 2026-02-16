@@ -11,7 +11,7 @@ app.use(express.json());
 // API Routes
 app.use('/api/v1', apiRoutes);
 
-// Global Error Handler (Must be last)
+// Global Error Handler 
 app.use(globalErrorHandler);
 
 const PORT = process.env.PORT || 5000;

@@ -3,7 +3,6 @@ const { Pool } = require('pg');
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  // Add SSL configuration for cloud environments like Render
   ssl: process.env.DATABASE_URL.includes('localhost') 
     ? false 
     : { rejectUnauthorized: false }

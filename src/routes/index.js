@@ -11,8 +11,6 @@ router.post('/login', auth.login);
 
 // Event Routes
 router.get('/events', events.getAllEvents);
-// Ensure 'getOneEvent' exists in eventController.js, or comment this out for now
-// router.get('/events/:id', events.getOneEvent); 
 router.post('/events', protect, restrictTo('organizer'), events.createEvent);
 
 // Booking Routes

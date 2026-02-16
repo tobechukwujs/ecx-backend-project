@@ -1,4 +1,3 @@
-// src/controllers/eventController.js
 const db = require('../config/db');
 
 exports.createEvent = async (req, res, next) => {

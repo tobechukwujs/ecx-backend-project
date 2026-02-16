@@ -1,4 +1,3 @@
-// src/controllers/bookingController.js
 const db = require('../config/db');
 
 exports.bookTicket = async (req, res, next) => {
@@ -8,7 +7,6 @@ exports.bookTicket = async (req, res, next) => {
     try {
         await client.query('BEGIN');
 
-        // Row-level locking to prevent race conditions
         const eventRes = await client.query(
             'SELECT * FROM events WHERE id = $1 FOR UPDATE', 
             [eventId]
@@ -19,13 +17,11 @@ exports.bookTicket = async (req, res, next) => {
         if (event.remaining_seats < quantity) throw new Error("Not enough seats");
         if (new Date(event.date_time) < new Date()) throw new Error("Event date has passed");
 
-        // Atomic seat update
         await client.query(
             'UPDATE events SET remaining_seats = remaining_seats - $1 WHERE id = $2',
             [quantity, eventId]
         );
 
-        // Create booking
         const booking = await client.query(
             'INSERT INTO bookings (user_id, event_id, ticket_quantity) VALUES ($1, $2, $3) RETURNING *',
             [req.user.id, eventId, quantity]
@@ -42,7 +38,6 @@ exports.bookTicket = async (req, res, next) => {
 };
 exports.getMyBookings = async (req, res, next) => {
     try {
-        // Multi-tenant isolation: Query filtered by req.user.id from JWT 
         const result = await db.query(
             `SELECT b.id, b.ticket_quantity, b.status, b.created_at, 
                     e.title, e.location, e.date_time 
